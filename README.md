@@ -1,4 +1,4 @@
-# PFR_scraper
+# pfr_scraper
 
 Contains functions used to scrape data from www.pro-football-reference.com and load into a MySQL database. 
 
