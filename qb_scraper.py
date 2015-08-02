@@ -6,8 +6,9 @@ import pandas as pd
 import itertools
 import os
 import pymysql
+import sqlalchemy
 
-def qb_scraper(qb_dict, target_date = '2002-08-31'):
+def qb_scraper(qb_dict, target_date):
 	def PlayerScrape(name, playerlink):
 		url = playerlink
 		r = requests.get(url)
@@ -47,15 +48,16 @@ def qb_scraper(qb_dict, target_date = '2002-08-31'):
 	]
 
 	QBS = pd.DataFrame(columns = clmheaders[0:23])
-	for key in playerlinks:
-		p = PlayerScrape(key, playerlinks[key])
+	for key in qb_dict:
+		print key
+		p = PlayerScrape(key, qb_dict[key])
 		if p.shape[1] == QBS.shape[1]:
 			QBS = QBS.append(p)
 		else:
 			continue
 		print key
 
-	target_date = pd.to_datetime('2002-08-30')
+	target_date = pd.to_datetime(target_date)
 	#QBS.index.name = 'name'
 	QBS = QBS.fillna(0)
 	QBS['Home'] = QBS['Home'].replace('@', 0).replace('', 1)
@@ -70,8 +72,8 @@ def qb_scraper(qb_dict, target_date = '2002-08-31'):
 	QBS['pts'] = [round(x, 1) for x in QBS['pts']]
 
 	QBS = QBS[QBS.date >= target_date]
-	# QBS['date'] = QBS['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
-	QBS['date'] = QBS['date'].apply(lambda x: x.date())
+	QBS['date'] = QBS['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+	
 	f = open('secret.txt', 'r')
 	secret = f.read()
 

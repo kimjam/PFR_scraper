@@ -8,7 +8,7 @@ import os
 import pymysql
 import sqlalchemy
 
-def wr_scraper(wr_dict, target_date = '2002-08-31'):
+def wr_scraper(wr_dict, target_date):
 	def PlayerScrape(name, playerlink, attributes):
 		url = playerlink
 		r = requests.get(url)

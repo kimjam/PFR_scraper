@@ -8,7 +8,7 @@ import os
 import pymysql
 import sqlalchemy
 
-def te_scraper(te_dict, target_date = '2002-08-31'):
+def te_scraper(te_dict, target_date):
 	def PlayerScrape(name, playerlink, attributes):
 		url = playerlink
 		r = requests.get(url)

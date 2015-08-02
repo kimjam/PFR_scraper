@@ -92,8 +92,27 @@ def boxscore_scraper(url, target_week, year):
 			elif pos == 'TE':
 				print(key)
 				tes[key] = playerlinks[key]
+			elif pos == 'P' or pos == 'K':
+				continue
 			else:
 				print(key)
 				find[key] = playerlinks[key]
 
 	return {'qbs': qbs, 'rbs': rbs, 'wrs': wrs, 'tes': tes, 'find': find }
+
+def main(url, target_week, year, target_date):
+	link_dict = boxscore_scraper(url, target_week, year)
+
+	import qb_scraper
+	import rb_scraper
+	import wr_scraper
+	import te_scraper
+
+	qb_scraper.qb_scraper(link_dict['qbs'], target_date)
+	rb_scraper.rb_scraper(link_dict['rbs'], target_date)
+	wr_scraper.wr_scraper(link_dict['wrs'], target_date)
+	te_scraper.te_scraper(link_dict['tes'], target_date)
+
+if __name__ == '__main__':
+	import sys
+	main(url = sys.argv[1], target_week = sys.argv[2], year = sys.argv[3], target_date = sys.argv[4])
