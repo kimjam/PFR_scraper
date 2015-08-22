@@ -34,7 +34,7 @@ def vegas_scraper(year, target_date):
         for ind in remove:
             del home[ind]
 
-        return dates[0:16], home[0:16]
+        return dates, home
 
     def pagescrape(url, team_dict):
         r = requests.get(url)
