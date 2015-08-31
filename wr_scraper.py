@@ -72,6 +72,7 @@ def wr_scraper(wr_dict, target_date):
 
     WRS = WRS[WRS.date >= target_date]
     WRS['date'] = WRS['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+    WRS['name'] = WRS['name'].apply(lambda x: x.replace("\'", "").lower())
 
     f = open('secret.txt', 'r')
     secret = f.read()

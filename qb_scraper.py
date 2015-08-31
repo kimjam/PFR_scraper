@@ -83,6 +83,7 @@ def qb_scraper(qb_dict, target_date):
 
     QBS = QBS[QBS.date >= target_date]
     QBS['date'] = QBS['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+    QBS['name'] = QBS['name'].apply(lambda x: x.replace("\'", "").lower())
 
     f = open('secret.txt', 'r')
     secret = f.read()

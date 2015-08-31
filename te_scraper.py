@@ -72,6 +72,7 @@ def te_scraper(te_dict, target_date):
 
     TES = TES[TES.date >= target_date]
     TES['date'] = TES['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+    TES['name'] = TES['name'].apply(lambda x: x.replace("\'", "").lower())
 
     f = open('secret.txt', 'r')
     secret = f.read()
