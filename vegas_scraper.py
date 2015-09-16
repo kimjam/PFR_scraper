@@ -7,7 +7,7 @@ import itertools
 import sqlalchemy
 
 
-def vegas_scraper(year, target_date):
+def vegas_scraper(year, target_date, week):
     def schedscrape(url):
         r = requests.get(url)
         soup = BeautifulSoup(r.content)
@@ -36,7 +36,7 @@ def vegas_scraper(year, target_date):
 
         return dates, home
 
-    def pagescrape(url, team_dict):
+    def pagescrape(url, team_dict, week):
         r = requests.get(url)
         soup = BeautifulSoup(r.content)
 
@@ -52,22 +52,29 @@ def vegas_scraper(year, target_date):
                 for c in col:
                     data.append(c.text)
 
-        breaks = np.linspace(0, 96, 7, dtype=int)
         ind = [
             'Opp', 'Spread', 'Over/Under', 'Result', 'vs. Line', 'OU Result'
         ]
-        vals = pd.DataFrame(index=ind, columns=range(1, 17))
+        vals = pd.DataFrame(index=ind, columns=range(1))
 
-        for i in range(6):
-            vals.ix[i] = [d for d in data[breaks[i]:breaks[i+1]]]
+        data_inds = [num + (week - 1) * 6 for num in range(6)]
+
+        if week == 1:
+            for i in data_inds:
+                vals.ix[i] = pd.Series(data)[i]
+        else:
+            for i in data_inds:
+                vals.ix[i - ((week - 1) * 6)] = pd.Series(data)[i]
 
         vals = vals.transpose()
         vals['Opp'] = vals['Opp'].map(lambda x: x.lstrip('@'))
         vals['Team'] = team
 
         sched_url = url.replace('lines', 'games')
-        vals['Date'], vals['Home'] = schedscrape(sched_url)
+        dates, homes = schedscrape(sched_url)
+        vals['Date'] = dates[week - 1]
         vals['Date'] = vals['Date'].apply(lambda x: pd.to_datetime(x).date())
+        vals['Home'] = homes[week - 1]
 
         return vals
 
@@ -94,7 +101,7 @@ def vegas_scraper(year, target_date):
     lines = pd.DataFrame(columns=headers)
 
     for link in links:
-        v = pagescrape(link, team_dict)
+        v = pagescrape(link, team_dict, week)
         lines = lines.append(v)
 
     lines = lines[lines.Date >= target_date]
@@ -106,7 +113,7 @@ def vegas_scraper(year, target_date):
     connect_string = connect_string % (secret)
     engine = sqlalchemy.create_engine(connect_string, echo=False)
 
-    lines.to_sql(con=engine, name='vegas2', if_exists='append', index=False)
+    lines.to_sql(con=engine, name='historic_vegas', if_exists='append', index=False)
 
     print 'Loaded into database.'
 
