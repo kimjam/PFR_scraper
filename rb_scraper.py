@@ -33,26 +33,62 @@ def rb_scraper(rb_dict, target_date):
         vals = pd.DataFrame(columns=clmheaders[0:17])
         breaks = np.linspace(0, len(data), (rows+1), dtype="int16")
 
-        for i in range(rows-1):
-            vals.loc[i] = [d for d in data[breaks[i]:breaks[i+1]]][0:17]
+        if rows == 1:
+            for i in range(1):
+                vals.loc[i] = [d for d in data[breaks[i]:breaks[i+1]]][0:17]
+        else:
+            for i in range(rows-1):
+                vals.loc[i] = [d for d in data[breaks[i]:breaks[i+1]]][0:17]
 
         vals.insert(0, 'Name', name)
-        if len(vals.columns) != 18 or sum(vals.columns == attributes) != 18:
-            null = pd.DataFrame(columns=attributes)
-            return null
-        else:
-            return vals
+
+        fixyds = [i for i in range(vals.shape[1]) if vals.columns[i] == 'Yds']
+
+        for f in fixyds:
+            if vals.columns[f-1] == 'Rec':
+                new_columns = vals.columns.values
+                new_columns[f] = 'rec_Yds'
+                vals.columns = new_columns
+            elif vals.columns[f-1] == 'Att':
+                new_columns = vals.columns.values
+                new_columns[f] = 'ru_Yds'
+                vals.columns = new_columns
+
+        fixtd = [i for i in range(vals.shape[1]) if vals.columns[i] == 'TD']
+
+        for f in fixtd:
+            if vals.columns[f-1] == 'Y/R':
+                new_columns = vals.columns.values
+                new_columns[f] = 'rec_TD'
+                vals.columns = new_columns
+            elif vals.columns[f-1] == 'Y/A':
+                new_columns = vals.columns.values
+                new_columns[f] = 'ru_TD'
+                vals.columns = new_columns
+
+        for c in vals.columns.values:
+            if c not in attributes:
+                vals = vals.drop([c], axis=1)
+
+        if vals.shape[1] < 18:
+            add = [c for c in attributes if c not in vals.columns]
+            for col in add:
+                vals[col] = pd.Series([0])
+
+        vals = vals[attributes]
+        return vals
 
     attributes = [
         'Name', 'Rk', 'G#', 'Date', 'Age', 'Tm', 'Home', 'Opp', 'Result',
-        'Att', 'Yds', 'Y/A', 'TD', 'Tgt', 'Rec', 'Yds', 'Y/R', 'TD'
+        'Att', 'ru_Yds', 'Y/A', 'ru_TD', 'Tgt', 'Rec', 'rec_Yds', 'Y/R',
+        'rec_TD'
     ]
     RBS = pd.DataFrame(columns=attributes)
 
     for key in rb_dict:
         print key
         p = PlayerScrape(key, rb_dict[key], attributes)
-        if sum(p.columns == RBS.columns) == 18:
+        if p.shape[1] == RBS.shape[1]:
             RBS = RBS.append(p)
             print key
 
@@ -72,8 +108,10 @@ def rb_scraper(rb_dict, target_date):
             'ru_yds', 'ru_td', 'rec', 'rec_yds', 'rec_td'
         ]
     ].astype(int)
-    RBS['pts'] = (RBS['ru_yds'] + RBS['rec_yds']) / (
-        10 + RBS['rec'] * .5 + (RBS['ru_td'] + RBS['rec_td']) * 6)
+    RBS['pts'] = (
+        (RBS['ru_yds'] + RBS['rec_yds']) / 10. +
+        RBS['rec'] * .5 + (RBS['ru_td'] + RBS['rec_td']) * 6
+    )
 
     RBS = RBS[RBS.date >= target_date]
     RBS['date'] = RBS['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
