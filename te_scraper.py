@@ -33,19 +33,46 @@ def te_scraper(te_dict, target_date):
         vals = pd.DataFrame(columns=clmheaders[0:13])
         breaks = np.linspace(0, len(data), (rows+1), dtype="int16")
 
-        for i in range(rows-1):
-            vals.loc[i] = [d for d in data[breaks[i]:breaks[i+1]]][0:13]
+        if rows == 1:
+            for i in range(1):
+                vals.loc[i] = [d for d in data[breaks[i]:breaks[i+1]]][0:13]
+        else:
+            for i in range(rows-1):
+                vals.loc[i] = [d for d in data[breaks[i]:breaks[i+1]]][0:13]
 
         vals.insert(0, 'Name', name)
-        if len(vals.columns) != 14 or sum(vals.columns == attributes) != 14:
-            null = pd.DataFrame(columns=attributes)
-            return null
-        else:
-            return vals
+
+        fixyds = [i for i in range(vals.shape[1]) if vals.columns[i] == 'Yds']
+
+        for f in fixyds:
+            if vals.columns[f-1] == 'Rec':
+                new_columns = vals.columns.values
+                new_columns[f] = 'rec_Yds'
+                vals.columns = new_columns
+
+        fixtd = [i for i in range(vals.shape[1]) if vals.columns[i] == 'TD']
+
+        for f in fixtd:
+            if vals.columns[f-1] == 'Y/R':
+                new_columns = vals.columns.values
+                new_columns[f] = 'rec_TD'
+                vals.columns = new_columns
+
+        for c in vals.columns.values:
+            if c not in attributes:
+                vals = vals.drop([c], axis=1)
+
+        if vals.shape[1] < 14:
+            add = [c for c in attributes if c not in vals.columns]
+            for col in add:
+                vals[col] = pd.Series([0])
+
+        vals = vals[attributes]
+        return vals
 
     attributes = [
         'Name', 'Rk', 'G#', 'Date', 'Age', 'Tm', 'Home',
-        'Opp', 'Result', 'Tgt', 'Rec', 'Yds', 'Y/R', 'TD'
+        'Opp', 'Result', 'Tgt', 'Rec', 'rec_Yds', 'Y/R', 'rec_TD'
     ]
     TES = pd.DataFrame(columns=attributes)
 
@@ -68,12 +95,13 @@ def te_scraper(te_dict, target_date):
     TES[['tgt', 'rec', 'rec_yds', 'rec_td']] = TES[
         ['tgt', 'rec', 'rec_yds', 'rec_td']
     ].astype(int)
-    TES['pts'] = TES['rec_yds'] / 10 + TES['rec'] * .5 + TES['rec_td'] * 6
+    TES['pts'] = TES['rec_yds'] / 10. + TES['rec'] * .5 + TES['rec_td'] * 6
 
     TES = TES[TES.date >= target_date]
     TES['date'] = TES['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
     TES['name'] = TES['name'].apply(lambda x: x.replace("\'", "").lower())
 
+    return TES
     f = open('secret.txt', 'r')
     secret = f.read()
 
