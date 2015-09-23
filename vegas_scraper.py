@@ -106,6 +106,7 @@ def vegas_scraper(year, target_date, week):
 
     lines = lines[lines.Date >= target_date]
 
+    # return lines
     f = open('secret.txt', 'r')
     secret = f.read()
 

@@ -31,18 +31,17 @@ def qb_scraper(qb_dict, target_date):
         cols = len(clmheaders)
         rows = len(data)/cols
 
-        vals = pd.DataFrame(index=[name], columns=clmheaders[0:22])
+        vals = pd.DataFrame(columns=clmheaders[0:22])
         breaks = np.linspace(0, len(data), (rows+1), dtype="int16")
 
         if rows == 1:
             for i in range(1):
-                vals.ix[i] = [d for d in data[breaks[i]:breaks[i+1]]][0:22]
+                vals.loc[i] = [d for d in data[breaks[i]:breaks[i+1]]][0:22]
         else:
             for i in range(rows-1):
-                vals.ix[i] = [d for d in data[breaks[i]:breaks[i+1]]][0:22]
+                vals.loc[i] = [d for d in data[breaks[i]:breaks[i+1]]][0:22]
 
-        vals.index.name = 'Name'
-        vals.reset_index(level=0, inplace=True)
+        vals.insert(0, 'Name', name)
         if vals.columns[9] != 'Cmp' and vals.columns[10] != 'Cmp':
             return vals
         else:
@@ -110,7 +109,7 @@ def qb_scraper(qb_dict, target_date):
     QBS['date'] = QBS['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
     QBS['name'] = QBS['name'].apply(lambda x: x.replace("\'", "").lower())
 
-    return QBS
+    # return QBS
     f = open('secret.txt', 'r')
     secret = f.read()
 
