@@ -117,7 +117,6 @@ def rb_scraper(rb_dict, target_date):
     RBS['date'] = RBS['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
     RBS['name'] = RBS['name'].apply(lambda x: x.replace("\'", "").lower())
 
-    # return RBS
     f = open('secret.txt', 'r')
     secret = f.read()
 

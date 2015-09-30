@@ -13,8 +13,8 @@ def boxscore_scraper(url, target_week, year):
         table = soup.find('table', {'id': 'skill_stats'})
         players = table.find_all(
             'td',
-            {'align': 'left', 'style': 'border: 1px dotted #AAA !important;'}
-        )
+            {'align': 'left'}
+        )[0::2]
 
         names = [p.text for p in players]
 
@@ -25,7 +25,7 @@ def boxscore_scraper(url, target_week, year):
         u = 'http://www.pro-football-reference.com'
         g = 'gamelog/'
 
-        links = [u + l.replace('.htm', '/') + g + year for l in links]
+        links = [u + l.replace('.htm', '/') + g + str(year) for l in links]
 
         playerlinks = dict(zip(names, links))
         return(playerlinks)
@@ -82,7 +82,7 @@ def boxscore_scraper(url, target_week, year):
     wrs = {}
     tes = {}
     find = {}
-    for link in boxscore['boxscorelink']:
+    for link in boxscore['boxscorelink'].tolist():
         playerlinks = playerscraper(link, str(year))
         for key in playerlinks:
             pos = positionscraper(playerlinks[key])
