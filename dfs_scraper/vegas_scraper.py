@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-import numpy as np
 import pandas as pd
 import itertools
 import sqlalchemy
@@ -40,7 +39,8 @@ def vegas_scraper(year, target_date, week):
         r = requests.get(url)
         soup = BeautifulSoup(r.content)
 
-        regex = r'http://www.pro-football-reference.com/teams/(.*)/.*_lines.htm'
+        regex = r'http://www.pro-football-reference.com/teams/(.*)\
+            /.*_lines.htm'
         team = re.compile(regex).findall(url)
         team = str(team[0])
         team = team_dict[team]
@@ -114,7 +114,12 @@ def vegas_scraper(year, target_date, week):
     connect_string = connect_string % (secret)
     engine = sqlalchemy.create_engine(connect_string, echo=False)
 
-    lines.to_sql(con=engine, name='historic_vegas', if_exists='append', index=False)
+    lines.to_sql(
+        con=engine,
+        name='historic_vegas',
+        if_exists='append',
+        index=False
+    )
 
     print 'Loaded into database.'
 
