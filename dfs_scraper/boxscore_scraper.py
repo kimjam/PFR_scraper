@@ -47,7 +47,7 @@ def boxscore_scraper(url, target_week, year):
 
         return(pos)
 
-    # url = 'http://www.pro-football-reference.com/years/2014/games.htm'
+    # url = 'http://www.pro-football-reference.com/years/2015/games.htm'
     r = requests.get(url)
     soup = BeautifulSoup(r.content)
 
