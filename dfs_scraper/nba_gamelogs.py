@@ -37,7 +37,7 @@ def nba_scraper(daily=False, season='2015-16'):
 
         df = df[df.game_date >= cutoff]
 
-    #clean
+    # clean data
     home = df['matchup'].apply(lambda x: x.split(' ')[1])
     df['home'] = home.replace(to_replace=['vs.', '@'], value=[1, 0])
     df['wl'] = df['wl'].replace(to_replace=['W', 'L'], value=[1, 0])
@@ -51,7 +51,7 @@ def nba_scraper(daily=False, season='2015-16'):
     cats['n_dub'] = cats.sum(axis=1)
 
     df['dub_dub'] = cats['n_dub'].apply(lambda x: int(bool(x > 1)))
-    df['trip_dub'] =cats['n_dub'].apply(lambda x: int(bool(x > 2)))
+    df['trip_dub'] = cats['n_dub'].apply(lambda x: int(bool(x > 2)))
     df['dk_pts'] = (
         df['pts'] + df['fg3m'] * .5 + df['reb'] * 1.25 + df['ast'] * 1.5 +
         df['stl'] * 2 + df['blk'] * 2 - df['tov'] * .5 + df['dub_dub'] * 1.5 +
