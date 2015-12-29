@@ -47,8 +47,7 @@ setup(
 
     install_requires=[
         'numpy', 'pandas', 'requests', 'BeautifulSoup', 'sqlalchemy',
-        'itertools', 'urllib', 'datetime', 'time', 're', 'os', 'json',
-        'pymysql'
+        'itertools', 'urllib', 'datetime', 'time', 're', 'os', 'pymysql'
     ],
 
     # Entry points for command line integration
