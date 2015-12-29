@@ -69,9 +69,14 @@ def nba_scraper(daily=False, season='2015-16', dbload=True):
         f = open('secret.txt', 'r')
         secret = f.read()
 
-        connect_string = 'mysql+pymysql://root:%s@127.0.0.1/nba?charset=utf8mb4'
-        connect_string = connect_string % (secret)
-        engine = sqlalchemy.create_engine(connect_string, echo=False)
-        df.to_sql(con=engine, name='game_logs', if_exists='append', index=False)
+        con_string = 'mysql+pymysql://root:%s@127.0.0.1/nba?charset=utf8mb4'
+        con_string = con_string % (secret)
+        engine = sqlalchemy.create_engine(con_string, echo=False)
+        df.to_sql(
+            con=engine,
+            name='game_logs',
+            if_exists='append',
+            index=False
+        )
 
     return df

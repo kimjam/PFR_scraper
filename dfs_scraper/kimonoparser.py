@@ -7,7 +7,7 @@ from datetime import datetime
 import sqlalchemy
 
 
-def kimono_lines_parser(url, num_thurs=1, num_sat=0, num_mon=1):
+def kimono_lines_parser(url, num_thurs=1, num_sat=0, num_mon=1, dbload=True):
     """
     url to kimonolabs api
     num_thurs number of thursday night games
@@ -47,8 +47,8 @@ def kimono_lines_parser(url, num_thurs=1, num_sat=0, num_mon=1):
 
     team_dict = {
         'Broncos': 'DEN', 'Chiefs': 'KAN', 'Texans': 'HOU', 'Panthers': 'CAR',
-        'Buccaneers': 'TAM', 'Saints': 'NOR', '49ers': 'SFO', 'Steelers': 'PIT',
-        'Lions': 'DET', 'Vikings': 'MIN', 'Patriots': 'NWE', 'Bills': 'BUF',
+        'Buccaneers': 'TAM', 'Saints': 'NOR', '49ers': 'SFO', 'Bills': 'BUF',
+        'Lions': 'DET', 'Vikings': 'MIN', 'Patriots': 'NWE', 'Steelers': 'PIT',
         'Cardinals': 'ARI', 'Bears': 'CHI', 'Titans': 'TEN', 'Browns': 'CLE',
         'Chargers': 'SDG', 'Bengals': 'CIN', 'Rams': 'STL', 'Redskins': 'WAS',
         'Falcons': 'ATL', 'Giants': 'NYG', 'Dolphins': 'MIA', 'Jaguars': 'JAX',
@@ -77,9 +77,9 @@ def kimono_lines_parser(url, num_thurs=1, num_sat=0, num_mon=1):
         f = open('secret.txt', 'r')
         secret = f.read()
 
-        connect_string = 'mysql+pymysql://root:%s@127.0.0.1/nfl?charset=utf8mb4'
-        connect_string = connect_string % (secret)
-        engine = sqlalchemy.create_engine(connect_string, echo=False)
+        con_string = 'mysql+pymysql://root:%s@127.0.0.1/nfl?charset=utf8mb4'
+        con_string = con_string % (secret)
+        engine = sqlalchemy.create_engine(con_string, echo=False)
 
         parsed_df.to_sql(
             con=engine,

@@ -121,9 +121,9 @@ def rb_scraper(rb_dict, target_date, dbload=True):
         f = open('secret.txt', 'r')
         secret = f.read()
 
-        connect_string = 'mysql+pymysql://root:%s@127.0.0.1/nfl?charset=utf8mb4'
-        connect_string = connect_string % (secret)
-        engine = sqlalchemy.create_engine(connect_string, echo=False)
+        con_string = 'mysql+pymysql://root:%s@127.0.0.1/nfl?charset=utf8mb4'
+        con_string = con_string % (secret)
+        engine = sqlalchemy.create_engine(con_string, echo=False)
         RBS.to_sql(con=engine, name='rb', if_exists='append', index=False)
 
     return RBS
