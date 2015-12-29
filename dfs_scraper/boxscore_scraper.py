@@ -1,3 +1,10 @@
+import requests
+from bs4 import BeautifulSoup
+import re
+import pandas as pd
+import itertools
+
+
 def boxscore_scraper(url, target_week, year):
     def playerscraper(url, year):
         r = requests.get(url)
