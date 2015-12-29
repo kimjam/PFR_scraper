@@ -1,11 +1,3 @@
-import requests
-from bs4 import BeautifulSoup
-import re
-import pandas as pd
-import itertools
-import sqlalchemy
-
-
 def vegas_scraper(year, target_date, week):
     def schedscrape(url):
         r = requests.get(url)

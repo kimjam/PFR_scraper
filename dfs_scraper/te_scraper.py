@@ -1,12 +1,3 @@
-import requests
-from bs4 import BeautifulSoup
-import re
-import numpy as np
-import pandas as pd
-import itertools
-import sqlalchemy
-
-
 def te_scraper(te_dict, target_date):
     def PlayerScrape(name, playerlink, attributes):
         url = playerlink

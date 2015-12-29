@@ -1,13 +1,3 @@
-import requests
-import pandas as pd
-import urllib
-from collections import OrderedDict
-from datetime import datetime
-from datetime import timedelta
-from datetime import date
-import sqlalchemy
-
-
 def nba_scraper(daily=False, season='2015-16'):
     url = 'http://stats.nba.com/stats/leaguegamelog?'
     parameters = {
