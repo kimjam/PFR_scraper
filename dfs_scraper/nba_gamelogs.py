@@ -8,7 +8,7 @@ from datetime import date
 import sqlalchemy
 
 
-def nba_scraper(daily=False, season='2015-16'):
+def nba_scraper(daily=False, season='2015-16', dbload=True):
     url = 'http://stats.nba.com/stats/leaguegamelog?'
     parameters = {
         'Counter': 1000,
@@ -65,13 +65,13 @@ def nba_scraper(daily=False, season='2015-16'):
     keep = [col for col in cols if col not in ['video_available', 'matchup']]
 
     df = df[keep]
+    if dbload:
+        f = open('secret.txt', 'r')
+        secret = f.read()
 
-    f = open('secret.txt', 'r')
-    secret = f.read()
-
-    connect_string = 'mysql+pymysql://root:%s@127.0.0.1/nba?charset=utf8mb4'
-    connect_string = connect_string % (secret)
-    engine = sqlalchemy.create_engine(connect_string, echo=False)
-    df.to_sql(con=engine, name='game_logs', if_exists='append', index=False)
+        connect_string = 'mysql+pymysql://root:%s@127.0.0.1/nba?charset=utf8mb4'
+        connect_string = connect_string % (secret)
+        engine = sqlalchemy.create_engine(connect_string, echo=False)
+        df.to_sql(con=engine, name='game_logs', if_exists='append', index=False)
 
     return df

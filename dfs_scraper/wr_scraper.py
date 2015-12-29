@@ -7,7 +7,7 @@ import itertools
 import sqlalchemy
 
 
-def wr_scraper(wr_dict, target_date):
+def wr_scraper(wr_dict, target_date, dbload=True):
     def PlayerScrape(name, playerlink, attributes):
         url = playerlink
         r = requests.get(url)
@@ -101,10 +101,13 @@ def wr_scraper(wr_dict, target_date):
     WRS['date'] = WRS['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
     WRS['name'] = WRS['name'].apply(lambda x: x.replace("\'", "").lower())
 
-    f = open('secret.txt', 'r')
-    secret = f.read()
+    if dbload:
+        f = open('secret.txt', 'r')
+        secret = f.read()
 
-    connect_string = 'mysql+pymysql://root:%s@127.0.0.1/nfl?charset=utf8mb4'
-    connect_string = connect_string % (secret)
-    engine = sqlalchemy.create_engine(connect_string, echo=False)
-    WRS.to_sql(con=engine, name='wr', if_exists='append', index=False)
+        connect_string = 'mysql+pymysql://root:%s@127.0.0.1/nfl?charset=utf8mb4'
+        connect_string = connect_string % (secret)
+        engine = sqlalchemy.create_engine(connect_string, echo=False)
+        WRS.to_sql(con=engine, name='wr', if_exists='append', index=False)
+
+    return WRS

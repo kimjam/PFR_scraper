@@ -7,7 +7,7 @@ import itertools
 import sqlalchemy
 
 
-def te_scraper(te_dict, target_date):
+def te_scraper(te_dict, target_date, dbload=True):
     def PlayerScrape(name, playerlink, attributes):
         url = playerlink
         r = requests.get(url)
@@ -101,10 +101,13 @@ def te_scraper(te_dict, target_date):
     TES['date'] = TES['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
     TES['name'] = TES['name'].apply(lambda x: x.replace("\'", "").lower())
 
-    f = open('secret.txt', 'r')
-    secret = f.read()
+    if dbload:
+        f = open('secret.txt', 'r')
+        secret = f.read()
 
-    connect_string = 'mysql+pymysql://root:%s@127.0.0.1/nfl?charset=utf8mb4'
-    connect_string = connect_string % (secret)
-    engine = sqlalchemy.create_engine(connect_string, echo=False)
-    TES.to_sql(con=engine, name='te', if_exists='append', index=False)
+        connect_string = 'mysql+pymysql://root:%s@127.0.0.1/nfl?charset=utf8mb4'
+        connect_string = connect_string % (secret)
+        engine = sqlalchemy.create_engine(connect_string, echo=False)
+        TES.to_sql(con=engine, name='te', if_exists='append', index=False)
+
+    return TES

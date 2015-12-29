@@ -7,7 +7,7 @@ import itertools
 import sqlalchemy
 
 
- def qb_scraper(qb_dict, target_date):
+def qb_scraper(qb_dict, target_date, dbload=True):
     def PlayerScrape(name, playerlink, final_headers):
         url = playerlink
         r = requests.get(url)
@@ -109,10 +109,13 @@ import sqlalchemy
     QBS['date'] = QBS['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
     QBS['name'] = QBS['name'].apply(lambda x: x.replace("\'", "").lower())
 
-    f = open('secret.txt', 'r')
-    secret = f.read()
+    if dbload:
+        f = open('secret.txt', 'r')
+        secret = f.read()
 
-    connect_string = 'mysql+pymysql://root:%s@127.0.0.1/nfl?charset=utf8mb4'
-    connect_string = connect_string % (secret)
-    engine = sqlalchemy.create_engine(connect_string, echo=False)
-    QBS.to_sql(con=engine, name='qb', if_exists='append', index=False)
+        connect_string = 'mysql+pymysql://root:%s@127.0.0.1/nfl?charset=utf8mb4'
+        connect_string = connect_string % (secret)
+        engine = sqlalchemy.create_engine(connect_string, echo=False)
+        QBS.to_sql(con=engine, name='qb', if_exists='append', index=False)
+
+    return QBS
