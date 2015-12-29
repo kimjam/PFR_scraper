@@ -46,7 +46,9 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
 
     install_requires=[
-        'numpy', 'pandas', 'requests', 'BeautifulSoup', 'sqlalchemy'
+        'numpy', 'pandas', 'requests', 'BeautifulSoup', 'sqlalchemy',
+        'itertools', 'urllib', 'datetime', 'time', 're', 'os', 'json',
+        'pymysql'
     ],
 
     # Entry points for command line integration
