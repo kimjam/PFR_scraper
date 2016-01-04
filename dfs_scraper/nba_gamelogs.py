@@ -52,11 +52,17 @@ def nba_scraper(daily=False, season='2015-16', dbload=True):
 
     df['dub_dub'] = cats['n_dub'].apply(lambda x: int(bool(x > 1)))
     df['trip_dub'] = cats['n_dub'].apply(lambda x: int(bool(x > 2)))
-    df['dk_pts'] = (
-        df['pts'] + df['fg3m'] * .5 + df['reb'] * 1.25 + df['ast'] * 1.5 +
-        df['stl'] * 2 + df['blk'] * 2 - df['tov'] * .5 + df['dub_dub'] * 1.5 +
-        df['trip_dub'] * 3
-    )
+
+    def dk_points(row):
+        pts = (
+            row['pts'] + row['fg3m'] * .5 + row['reb'] * 1.25 +
+            row['ast'] * 1.5 + row['stl'] * 2 + row['blk'] * 2 -
+            row['tov'] * .5 + row['dub_dub'] * 1.5 + row['trip_dub'] * 3
+        )
+
+        return pts
+
+    df['dk_pts'] = df.apply(lambda row: dk_points(row), axis=1)
 
     cols = df.columns.tolist()
     cols[cols.index('team_abbreviation')] = u'team'
